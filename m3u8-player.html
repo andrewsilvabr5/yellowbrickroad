@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>M3U8 Player</title>
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+  </head>
+  <body>
+    <h1>M3U8 Player</h1>
+    <form>
+      <label for="video-url">Enter the URL of your M3U8 video file:</label>
+      <input type="text" id="video-url" name="video-url">
+      <button type="button" id="play-button">Play</button>
+    </form>
+    <video id="video-element" width="640" height="360"></video>
+    <script>
+      var videoElement = document.getElementById('video-element');
+      var hlsPlayer = null;
+      
+      var playButton = document.getElementById('play-button');
+      playButton.addEventListener('click', function() {
+        var videoUrl = document.getElementById('video-url').value;
+        if (videoUrl) {
+          if (Hls.isSupported()) {
+            if (hlsPlayer) {
+              hlsPlayer.destroy();
+              hlsPlayer = null;
+            }
+            hlsPlayer = new Hls();
+            hlsPlayer.loadSource(videoUrl);
+            hlsPlayer.attachMedia(videoElement);
+            hlsPlayer.on(Hls.Events.MANIFEST_PARSED,function() {
+              videoElement.play();
+            });
+          } else if (videoElement.canPlayType('application/vnd.apple.mpegurl')) {
+            videoElement.src = videoUrl;
+            videoElement.addEventListener('loadedmetadata',function() {
+              videoElement.play();
+            });
+          } else {
+            alert('HLS.js is not supported in this browser');
+          }
+        } else {
+          alert('Please enter the URL of your M3U8 video file');
+        }
+      });
+    </script>
+  </body>
+</html>
